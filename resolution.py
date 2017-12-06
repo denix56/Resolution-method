@@ -84,25 +84,25 @@ class App(QMainWindow):
             liters = []
             expr_parts = []
             b = '() '
-            for let in simplified_str[1:]:
+            for let in simplified_str:
                 for s in b:
                     let = let.replace(s, '')
                 if len(let) == 1 or len(let) == 2 and let[0] == '¬':
                     liters.append(let)
                 else:
                     expr_parts.append(let)
-            simplified_str = [simplified_str[0]] + liters + expr_parts
+            simplified_str = liters + expr_parts
 
             dict_letters = dict()
             dict_values = dict()
-
+            created_resolvents = set()
             for ex in simplified_str:
                 cur = ex.split('∨')
                 cur_exp = set()
                 for symb in cur:
                     letter = symb.replace('¬', '')
 
-                    if not (letter in dict_letters):
+                    if letter not in dict_letters:
                         dict_letters[letter] = len(dict_letters) + 1
                         dict_values[dict_letters[letter]] = letter
                     cur_exp.add(dict_letters[letter] * (-1 if '¬' in symb else 1))
@@ -111,6 +111,7 @@ class App(QMainWindow):
 
             i = 0
             result = False
+
             while (not result) and (i < len(expressions) - 1):
                 for j in range(i + 1, len(expressions)):
                     if not (expressions[j] <= expressions[i]):
@@ -123,7 +124,7 @@ class App(QMainWindow):
                             else:
                                 new_exp.add(l)
 
-                        if has_conc_pair:
+                        if has_conc_pair and new_exp not in expressions:
                             if len(new_exp) == 0:
                                 result = True
                                 self.printExprStr(len(expressions) + 1, '▯', (i + 1, j + 1))
@@ -132,7 +133,6 @@ class App(QMainWindow):
                                 expressions.append(new_exp)
                                 self.printExpr(len(expressions), new_exp, dict_values, (i + 1, j + 1))
                 i += 1
-
             if result:
                 self.verboseText.appendPlainText('Theorem proved.')
             else:
