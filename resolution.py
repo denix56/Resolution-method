@@ -1,10 +1,9 @@
 import sys
 
-from pyprover import *
-from PyQt5 import QtGui, QtCore
-
-from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QPushButton, QLineEdit, QPlainTextEdit
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QPlainTextEdit
+from pyprover import *
+
 
 class App(QMainWindow):
  
