@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QPlainTextEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QPlainTextEdit, QHBoxLayout, QVBoxLayout
 from pyprover import *
 
 
@@ -14,9 +14,9 @@ class App(QMainWindow):
         self.top = 300
         self.width = 600
         self.height = 600
-        self.initUI()
+        self.init_ui()
  
-    def initUI(self):
+    def init_ui(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
@@ -54,11 +54,12 @@ class App(QMainWindow):
         self.button.clicked.connect(self.on_click)
         self.show()
 
-    def printExpr(self, idx : int, expr, val_to_names : dict, parents = ()):
+    def print_expr(self, idx : int, expr, val_to_names : dict, parents = ()):
         self.verboseText.appendPlainText(str(idx) + ') ' + ' ∨ '.join(
             ('¬' if x < 0 else '') + str(val_to_names[abs(x)]) for x in expr) +
                                          ('\t resolvent of ' + str(parents) if parents else '') + '\n')
-    def printExprStr(self, idx : int, expr_str : str, parents = ()):
+
+    def print_expr_str(self, idx : int, expr_str : str, parents = ()):
         self.verboseText.appendPlainText(str(idx) + ') ' + expr_str +
                                          ('\t resolvent of ' + str(parents) if parents else '') + '\n')
  
@@ -94,7 +95,6 @@ class App(QMainWindow):
 
             dict_letters = dict()
             dict_values = dict()
-            created_resolvents = set()
             for ex in simplified_str:
                 cur = ex.split('∨')
                 cur_exp = set()
@@ -106,7 +106,7 @@ class App(QMainWindow):
                         dict_values[dict_letters[letter]] = letter
                     cur_exp.add(dict_letters[letter] * (-1 if '¬' in symb else 1))
                 expressions.append(cur_exp)
-                self.printExpr(len(expressions), cur_exp, dict_values)
+                self.print_expr(len(expressions), cur_exp, dict_values)
 
             i = 0
             result = False
@@ -126,11 +126,11 @@ class App(QMainWindow):
                         if has_conc_pair and new_exp not in expressions:
                             if len(new_exp) == 0:
                                 result = True
-                                self.printExprStr(len(expressions) + 1, '▯', (i + 1, j + 1))
+                                self.print_expr_str(len(expressions) + 1, '▯', (i + 1, j + 1))
                                 break
                             else:
                                 expressions.append(new_exp)
-                                self.printExpr(len(expressions), new_exp, dict_values, (i + 1, j + 1))
+                                self.print_expr(len(expressions), new_exp, dict_values, (i + 1, j + 1))
                 i += 1
             if result:
                 self.verboseText.appendPlainText('Theorem proved.')
@@ -138,7 +138,6 @@ class App(QMainWindow):
                 self.verboseText.appendPlainText('Theorem was not proved.')
         except:
             self.verboseText.appendPlainText('Incorrect expression.')
-
 
 
 if __name__ == '__main__':
